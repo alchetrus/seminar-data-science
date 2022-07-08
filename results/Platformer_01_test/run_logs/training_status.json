@@ -1,0 +1,29 @@
+{
+    "finishLevel": {
+        "checkpoints": [
+            {
+                "steps": 6612,
+                "file_path": "results/Platformer_01_test/finishLevel/finishLevel-6612.onnx",
+                "reward": -1.0049999952316284,
+                "creation_time": 1657320781.305165,
+                "auxillary_file_paths": [
+                    "results/Platformer_01_test/finishLevel/finishLevel-6612.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 6612,
+            "file_path": "results/Platformer_01_test/finishLevel.onnx",
+            "reward": -1.0049999952316284,
+            "creation_time": 1657320781.305165,
+            "auxillary_file_paths": [
+                "results/Platformer_01_test/finishLevel/finishLevel-6612.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.28.0",
+        "torch_version": "1.8.1+cu102"
+    }
+}

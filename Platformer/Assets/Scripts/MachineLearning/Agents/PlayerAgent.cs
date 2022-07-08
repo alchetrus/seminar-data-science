@@ -13,25 +13,29 @@ using Random = UnityEngine.Random;
 public class PlayerAgent : Agent
 {
     [SerializeField] private End treasure;
-    [SerializeField] private ScoreCollectible gems;
+    [SerializeField] private Transform gems;
     [SerializeField] private Transform spikes;
     CharacterState _characterState;
 
     public override void Initialize()
     {
         _characterState = GetComponent<CharacterState>();
+        MaxStep = 1000;
     }
 
     public override void OnEpisodeBegin()
     {
-        float[] possiblePositionX = new float[] { -3.5f, 3.5f };
+        float[] possiblePositionX = { -3.5f, 3.5f, 2f, 1f, 6f, 5f };
         int randomIndex = Random.Range(0, possiblePositionX.Length);
         float positionX = possiblePositionX[randomIndex];
 
-        spikes.transform.localPosition = (randomIndex == 0)
-            ? new Vector3(possiblePositionX[1], 0, 0)
-            : new Vector3(possiblePositionX[0], 0, 0);
-        transform.localPosition = new Vector3(2, 0, 0);
+        spikes.transform.localPosition = new Vector3(positionX, -2.5f, 0);
+        
+        randomIndex = Random.Range(0, possiblePositionX.Length);
+        positionX = possiblePositionX[randomIndex];
+        gems.transform.localPosition = new Vector3(positionX, 0, 0);
+        
+        // transform.localPosition = new Vector3(2, 0, 0);
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -53,8 +57,8 @@ public class PlayerAgent : Agent
     public override void OnActionReceived(ActionBuffers actions)
     {
         _characterState.horizontal = actions.DiscreteActions[0] == 2 ? -1 : actions.DiscreteActions[0];
-        _characterState.vertical = actions.DiscreteActions[1] == 2 ? -1 : actions.DiscreteActions[1];
-        // if (MaxStep > 0) AddReward(-1f / MaxStep);
+        _characterState.vertical = actions.DiscreteActions[3];
+        if (MaxStep > 0) AddReward(-1f / MaxStep);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
