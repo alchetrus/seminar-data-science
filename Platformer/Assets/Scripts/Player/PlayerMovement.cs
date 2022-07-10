@@ -76,12 +76,12 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Space) && body.velocity.y > 0)
             body.velocity = new Vector2(body.velocity.x, body.velocity.y / 2);
 
-        if (onWall())
-        {
-            body.gravityScale = 0;
-            body.velocity = Vector2.zero;
-        }
-        else
+        // if (onWall())
+        // {
+        //     body.gravityScale = 0;
+        //     body.velocity = Vector2.zero;
+        // }
+        // else
         {
             body.gravityScale = 7;
             // body.velocity = new Vector2(horizontalInput * speed, body.velocity.y);
@@ -98,24 +98,17 @@ public class PlayerMovement : MonoBehaviour
                 coyoteCounter -= Time.deltaTime; //Start decreasing coyote counter when not on the ground
         }
     }
-
-    // private void FixedUpdate()
-    // {
-    //     float moveFactor = _characterState.horizontal * Time.deltaTime * speed;
-    //     // body.velocity = new Vector2(moveFactor, body.velocity.y);
-    //     _characterState.rigidbody2D.velocity = new Vector2(moveFactor, _characterState.rigidbody2D.velocity.y);
-    // }
-
+    
     private void Jump()
     {
-        if (coyoteCounter <= 0 && !onWall() && jumpCounter <= 0) return;
+        if (coyoteCounter <= 0 && onWall() && jumpCounter <= 0) return;
         //If coyote counter is 0 or less and not on the wall and don't have any extra jumps don't do anything
 
         SoundManager.instance.PlaySound(jumpSound);
 
-        if (onWall())
-            WallJump();
-        else
+        // if (onWall())
+        //     WallJump();
+        // else
         {
             if (isGrounded())
                 body.velocity = new Vector2(body.velocity.x, jumpPower);

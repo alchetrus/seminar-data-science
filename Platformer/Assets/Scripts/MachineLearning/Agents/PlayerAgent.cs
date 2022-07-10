@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Player;
+using Unity.Burst;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using UnityEditor.Search;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
@@ -13,29 +15,50 @@ using Random = UnityEngine.Random;
 public class PlayerAgent : Agent
 {
     [SerializeField] private End treasure;
-    [SerializeField] private Transform gems;
-    [SerializeField] private Transform spikes;
+    [SerializeField] private GameObject[] gems;
+    [SerializeField] private GameObject[] spikes;
+    [SerializeField] private GameObject[] saws;
+    [SerializeField] private GameObject[] fireTraps;
+    [SerializeField] private GameObject[] enemyPatrols;
+    [SerializeField] private GameObject[] arrowTraps;
+    
     CharacterState _characterState;
 
     public override void Initialize()
     {
         _characterState = GetComponent<CharacterState>();
-        MaxStep = 1000;
+        MaxStep = 700;
     }
 
     public override void OnEpisodeBegin()
     {
         float[] possiblePositionX = { -3.5f, 3.5f, 2f, 1f, 6f, 5f };
+        // float[] possiblePositionY = { -2.5f, -1.5f, -1f, 0f, 1f, 1.5f, 2.5f };
         int randomIndex = Random.Range(0, possiblePositionX.Length);
+        // int randomIndexY = Random.Range(0, possiblePositionY.Length);
         float positionX = possiblePositionX[randomIndex];
+        // float positionY = possiblePositionY[randomIndexY];
 
-        spikes.transform.localPosition = new Vector3(positionX, -2.5f, 0);
-        
-        randomIndex = Random.Range(0, possiblePositionX.Length);
-        positionX = possiblePositionX[randomIndex];
-        gems.transform.localPosition = new Vector3(positionX, 0, 0);
-        
-        // transform.localPosition = new Vector3(2, 0, 0);
+        foreach (var spike in spikes)
+        {
+            spike.transform.localPosition = new Vector3(positionX, -2.5f, 0);
+            randomIndex = Random.Range(0, possiblePositionX.Length);
+            positionX = possiblePositionX[randomIndex];
+        }
+
+        foreach (var fireTrap in fireTraps)
+        {
+            fireTrap.transform.localPosition = new Vector3(positionX, -2.5f, 0);
+            randomIndex = Random.Range(0, possiblePositionX.Length);
+            positionX = possiblePositionX[randomIndex];
+        }
+
+        // foreach (var gem in gems)
+        // {
+        //     gem.transform.localPosition = new Vector3(positionX, positionY, 0);
+        //     randomIndexY = Random.Range(0, possiblePositionY.Length);
+        //     positionY = possiblePositionY[randomIndexY];
+        // }
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -43,15 +66,21 @@ public class PlayerAgent : Agent
         Vector3 localPosition = transform.localPosition;
 
         Vector3 dirToTreasure = (treasure.transform.localPosition - localPosition).normalized;
-        Vector3 dirToGem = (gems.transform.localPosition - localPosition).normalized;
 
-        Debug.Log(dirToGem.x);
+        List<Vector3> dirToGems = new List<Vector3>();
+        foreach (var gem in gems)
+        {
+            dirToGems.Add((gem.transform.localPosition - localPosition).normalized);
+        }
 
+        foreach (var dirToGem in dirToGems)
+        {
+            sensor.AddObservation(dirToGem.x);
+            sensor.AddObservation(dirToGem.y); 
+        }
+        
         sensor.AddObservation(dirToTreasure.x);
         sensor.AddObservation(dirToTreasure.y);
-
-        sensor.AddObservation(dirToGem.x);
-        sensor.AddObservation(dirToGem.y);
     }
 
     public override void OnActionReceived(ActionBuffers actions)
@@ -63,12 +92,6 @@ public class PlayerAgent : Agent
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        // ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
-        // continuousActions[0] = Input.GetAxisRaw("Horizontal");
-        // if (Input.GetKey(KeyCode.RightArrow))
-        // {
-        //     continuousActions[0] = 1;
-        // }
         ActionSegment<int> discreteActions = actionsOut.DiscreteActions;
         switch (Mathf.RoundToInt(Input.GetAxisRaw("Horizontal")))
         {
@@ -114,6 +137,26 @@ public class PlayerAgent : Agent
                 AddReward(10f);
                 EndEpisode();
                 break;
+            case "EnemyPatrol":
+                Debug.Log("Patrol");
+                SetReward(-1f);
+                EndEpisode();
+                break;
+            case "ArrowTrap":
+                Debug.Log("ArrowTrap");
+                SetReward(-1f);
+                EndEpisode();
+                break;
+            case "FireTrap":
+                Debug.Log("FireTrap");
+                SetReward(-1f);
+                EndEpisode();
+                break;
+            case "WallLeft": 
+                Debug.Log("Wall");
+                SetReward(-10f);
+                EndEpisode();
+                break;
         }
     }
 
@@ -150,6 +193,26 @@ public class PlayerAgent : Agent
             case "End":
                 Debug.Log("End");
                 AddReward(10f);
+                EndEpisode();
+                break;
+            case "EnemyPatrol":
+                Debug.Log("Patrol");
+                SetReward(-1f);
+                EndEpisode();
+                break;
+            case "ArrowTrap":
+                Debug.Log("ArrowTrap");
+                SetReward(-1f);
+                EndEpisode();
+                break;
+            case "FireTrap":
+                Debug.Log("FireTrap");
+                SetReward(-1f);
+                EndEpisode();
+                break;
+            case "WallLeft": 
+                Debug.Log("Wall");
+                SetReward(-10f);
                 EndEpisode();
                 break;
         }
