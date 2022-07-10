@@ -35543,6 +35543,10 @@ PrefabInstance:
       value: finishLevel
       objectReference: {fileID: 0}
     - target: {fileID: 3138165483895470540, guid: 9acc49d7ce5e1ab45a98f01a135b8b02, type: 3}
+      propertyPath: m_BehaviorType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3138165483895470540, guid: 9acc49d7ce5e1ab45a98f01a135b8b02, type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
       value: 46
       objectReference: {fileID: 0}
@@ -35585,6 +35589,10 @@ PrefabInstance:
     - target: {fileID: 3138165483895470540, guid: 9acc49d7ce5e1ab45a98f01a135b8b02, type: 3}
       propertyPath: m_BrainParameters.m_ActionSpec.BranchSizes.Array.data[3]
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3433475638424443779, guid: 9acc49d7ce5e1ab45a98f01a135b8b02, type: 3}
+      propertyPath: MaxStep
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 3433475638424443779, guid: 9acc49d7ce5e1ab45a98f01a135b8b02, type: 3}
       propertyPath: treasure
