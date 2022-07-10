@@ -27,38 +27,33 @@ public class PlayerAgent : Agent
     public override void Initialize()
     {
         _characterState = GetComponent<CharacterState>();
-        MaxStep = 700;
+        MaxStep = 300;
     }
 
     public override void OnEpisodeBegin()
     {
         float[] possiblePositionX = { -3.5f, 3.5f, 2f, 1f, 6f, 5f };
-        // float[] possiblePositionY = { -2.5f, -1.5f, -1f, 0f, 1f, 1.5f, 2.5f };
+        float[] possiblePositionY = { -2.5f, -1.5f, -1f, 0f, 1f, 1.5f, 2.5f };
         int randomIndex = Random.Range(0, possiblePositionX.Length);
-        // int randomIndexY = Random.Range(0, possiblePositionY.Length);
+        int randomIndexY = Random.Range(0, possiblePositionY.Length);
         float positionX = possiblePositionX[randomIndex];
-        // float positionY = possiblePositionY[randomIndexY];
+        float positionY = possiblePositionY[randomIndexY];
 
-        foreach (var spike in spikes)
+        /*foreach (var spike in spikes)
         {
             spike.transform.localPosition = new Vector3(positionX, -2.5f, 0);
             randomIndex = Random.Range(0, possiblePositionX.Length);
             positionX = possiblePositionX[randomIndex];
         }
 
-        foreach (var fireTrap in fireTraps)
-        {
-            fireTrap.transform.localPosition = new Vector3(positionX, -2.5f, 0);
-            randomIndex = Random.Range(0, possiblePositionX.Length);
-            positionX = possiblePositionX[randomIndex];
-        }
 
-        // foreach (var gem in gems)
-        // {
-        //     gem.transform.localPosition = new Vector3(positionX, positionY, 0);
-        //     randomIndexY = Random.Range(0, possiblePositionY.Length);
-        //     positionY = possiblePositionY[randomIndexY];
-        // }
+        foreach (var gem in gems)
+        {
+            // gem.SetActive(true);
+            gem.transform.localPosition = new Vector3(positionX, positionY, 0);
+            randomIndexY = Random.Range(0, possiblePositionY.Length);
+            positionY = possiblePositionY[randomIndexY];
+        }*/
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -79,6 +74,18 @@ public class PlayerAgent : Agent
             sensor.AddObservation(dirToGem.y);
         }
 
+        List<Vector3> dirToTraps = new List<Vector3>();
+        foreach (var spike in spikes)
+        {
+            dirToTraps.Add((spike.transform.localPosition - localPosition).normalized);
+        }
+
+        foreach (var dirToTrap in dirToTraps)
+        {
+            sensor.AddObservation(dirToTrap.x);
+            sensor.AddObservation(dirToTrap.y);
+        }
+
         sensor.AddObservation(dirToTreasure.x);
         sensor.AddObservation(dirToTreasure.y);
     }
@@ -87,6 +94,10 @@ public class PlayerAgent : Agent
     {
         _characterState.horizontal = actions.DiscreteActions[0] == 2 ? -1 : actions.DiscreteActions[0];
         _characterState.vertical = actions.DiscreteActions[3];
+        if (_characterState.horizontal == 1)
+        {
+            AddReward(.05f);
+        }
         if (MaxStep > 0) AddReward(-1f / MaxStep);
     }
 
@@ -111,25 +122,35 @@ public class PlayerAgent : Agent
 
     public void OnCollisionEnter2D(Collision2D col)
     {
+
+        if (col.gameObject.TryGetComponent<End>(out End end))
+        {
+            Debug.Log("END REACHED");
+            AddReward(30f);
+            EndEpisode();
+        }
         switch (col.gameObject.name)
         {
             case "Emerald":
                 Debug.Log("Emerald Collected");
-                AddReward(.5f);
+                AddReward(1f);
                 break;
             case "Spikes":
                 Debug.Log("SPIKES FOUND");
-                SetReward(-1f);
+                //SetReward(-1f);
+                AddReward(-10f);
                 EndEpisode();
                 break;
             case "Firetrap":
                 Debug.Log("Firetrap");
-                SetReward(-1f);
+                //SetReward(-1f);
+                AddReward(-10f);
                 EndEpisode();
                 break;
             case "Saw":
                 Debug.Log("Saw");
-                SetReward(-1f);
+                //SetReward(-1f);
+                AddReward(-10f);
                 EndEpisode();
                 break;
             case "End":
@@ -139,17 +160,20 @@ public class PlayerAgent : Agent
                 break;
             case "EnemyPatrol":
                 Debug.Log("Patrol");
-                SetReward(-1f);
+                //SetReward(-1f);
+                AddReward(-10f);
                 EndEpisode();
                 break;
             case "ArrowTrap":
                 Debug.Log("ArrowTrap");
-                SetReward(-1f);
+                //SetReward(-1f);
+                AddReward(-10f);
                 EndEpisode();
                 break;
             case "FireTrap":
                 Debug.Log("FireTrap");
-                SetReward(-1f);
+                //SetReward(-1f);
+                AddReward(-10f);
                 EndEpisode();
                 break;
             case "WallLeft":
@@ -159,7 +183,8 @@ public class PlayerAgent : Agent
                 break;
             case "WallRight":
                 Debug.Log("Wall");
-                SetReward(-10f);
+                //SetReward(-1f);
+                AddReward(-10f);
                 EndEpisode();
                 break;
         }
@@ -170,7 +195,7 @@ public class PlayerAgent : Agent
         if (col.gameObject.TryGetComponent<End>(out End end))
         {
             Debug.Log("END REACHED");
-            AddReward(20f);
+            AddReward(30f);
             EndEpisode();
         }
 
@@ -178,21 +203,24 @@ public class PlayerAgent : Agent
         {
             case "Emerald":
                 Debug.Log("Emerald Collected");
-                AddReward(.5f);
+                AddReward(1f);
                 break;
             case "Spikes":
                 Debug.Log("SPIKES FOUND");
-                SetReward(-1f);
+                //SetReward(-1f);
+                AddReward(-10f);
                 EndEpisode();
                 break;
             case "Firetrap":
                 Debug.Log("Firetrap");
-                SetReward(-1f);
+                //SetReward(-1f);
+                AddReward(-10f);
                 EndEpisode();
                 break;
             case "Saw":
                 Debug.Log("Saw");
-                SetReward(-1f);
+                //SetReward(-1f);
+                AddReward(-10f);
                 EndEpisode();
                 break;
             case "End":
@@ -202,17 +230,20 @@ public class PlayerAgent : Agent
                 break;
             case "EnemyPatrol":
                 Debug.Log("Patrol");
-                SetReward(-1f);
+                //SetReward(-1f);
+                AddReward(-10f);
                 EndEpisode();
                 break;
             case "ArrowTrap":
                 Debug.Log("ArrowTrap");
-                SetReward(-1f);
+                //SetReward(-1f);
+                AddReward(-10f);
                 EndEpisode();
                 break;
             case "FireTrap":
                 Debug.Log("FireTrap");
-                SetReward(-1f);
+                //SetReward(-1f);
+                AddReward(-10f);
                 EndEpisode();
                 break;
             case "WallLeft":
@@ -222,7 +253,8 @@ public class PlayerAgent : Agent
                 break;
             case "WallRight":
                 Debug.Log("Wall");
-                SetReward(-10f);
+                //SetReward(-1f);
+                AddReward(-10f);
                 EndEpisode();
                 break;
         }
