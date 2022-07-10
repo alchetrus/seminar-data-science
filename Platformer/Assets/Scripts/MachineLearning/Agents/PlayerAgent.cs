@@ -21,7 +21,7 @@ public class PlayerAgent : Agent
     [SerializeField] private GameObject[] fireTraps;
     [SerializeField] private GameObject[] enemyPatrols;
     [SerializeField] private GameObject[] arrowTraps;
-    
+
     CharacterState _characterState;
 
     public override void Initialize()
@@ -76,9 +76,9 @@ public class PlayerAgent : Agent
         foreach (var dirToGem in dirToGems)
         {
             sensor.AddObservation(dirToGem.x);
-            sensor.AddObservation(dirToGem.y); 
+            sensor.AddObservation(dirToGem.y);
         }
-        
+
         sensor.AddObservation(dirToTreasure.x);
         sensor.AddObservation(dirToTreasure.y);
     }
@@ -134,7 +134,7 @@ public class PlayerAgent : Agent
                 break;
             case "End":
                 Debug.Log("End");
-                AddReward(10f);
+                AddReward(20f);
                 EndEpisode();
                 break;
             case "EnemyPatrol":
@@ -152,7 +152,12 @@ public class PlayerAgent : Agent
                 SetReward(-1f);
                 EndEpisode();
                 break;
-            case "WallLeft": 
+            case "WallLeft":
+                Debug.Log("Wall");
+                SetReward(-10f);
+                EndEpisode();
+                break;
+            case "WallRight":
                 Debug.Log("Wall");
                 SetReward(-10f);
                 EndEpisode();
@@ -165,7 +170,7 @@ public class PlayerAgent : Agent
         if (col.gameObject.TryGetComponent<End>(out End end))
         {
             Debug.Log("END REACHED");
-            AddReward(1f);
+            AddReward(20f);
             EndEpisode();
         }
 
@@ -210,7 +215,12 @@ public class PlayerAgent : Agent
                 SetReward(-1f);
                 EndEpisode();
                 break;
-            case "WallLeft": 
+            case "WallLeft":
+                Debug.Log("Wall");
+                SetReward(-10f);
+                EndEpisode();
+                break;
+            case "WallRight":
                 Debug.Log("Wall");
                 SetReward(-10f);
                 EndEpisode();
