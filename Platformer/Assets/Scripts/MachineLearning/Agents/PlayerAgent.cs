@@ -14,6 +14,7 @@ using Random = UnityEngine.Random;
 
 public class PlayerAgent : Agent
 {
+    // supply these arguments through the unity editor
     [SerializeField] private End treasure;
     // array with gems objects
     [SerializeField] private GameObject[] gems;
