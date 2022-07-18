@@ -15,11 +15,17 @@ using Random = UnityEngine.Random;
 public class PlayerAgent : Agent
 {
     [SerializeField] private End treasure;
+    // array with gems objects
     [SerializeField] private GameObject[] gems;
+    // array with spikes objects
     [SerializeField] private GameObject[] spikes;
+    // array with saws objects
     [SerializeField] private GameObject[] saws;
+    // array with fireTraps
     [SerializeField] private GameObject[] fireTraps;
+    // array with enemyPatrols
     [SerializeField] private GameObject[] enemyPatrols;
+    // array with arrowTraps
     [SerializeField] private GameObject[] arrowTraps;
 
     CharacterState _characterState;
@@ -38,7 +44,10 @@ public class PlayerAgent : Agent
         int randomIndexY = Random.Range(0, possiblePositionY.Length);
         float positionX = possiblePositionX[randomIndex];
         float positionY = possiblePositionY[randomIndexY];
-
+        
+        // randomizes the position of the spikes and gems at the beginning of each episode
+        // uncomment when training
+        
         /*foreach (var spike in spikes)
         {
             spike.transform.localPosition = new Vector3(positionX, -2.5f, 0);
@@ -61,7 +70,8 @@ public class PlayerAgent : Agent
         Vector3 localPosition = transform.localPosition;
 
         Vector3 dirToTreasure = (treasure.transform.localPosition - localPosition).normalized;
-
+        
+        // position of the gems
         List<Vector3> dirToGems = new List<Vector3>();
         foreach (var gem in gems)
         {
@@ -73,7 +83,7 @@ public class PlayerAgent : Agent
             sensor.AddObservation(dirToGem.x);
             sensor.AddObservation(dirToGem.y);
         }
-
+        // position of the traps
         List<Vector3> dirToTraps = new List<Vector3>();
         foreach (var spike in spikes)
         {
@@ -94,6 +104,7 @@ public class PlayerAgent : Agent
     {
         _characterState.horizontal = actions.DiscreteActions[0] == 2 ? -1 : actions.DiscreteActions[0];
         _characterState.vertical = actions.DiscreteActions[3];
+        // add reward for the movement to the right       
         if (_characterState.horizontal == 1)
         {
             AddReward(.05f);
@@ -122,7 +133,8 @@ public class PlayerAgent : Agent
 
     public void OnCollisionEnter2D(Collision2D col)
     {
-
+        // add rewards for collecting the emeralds and reaching the end
+        // punish for collision with the traps
         if (col.gameObject.TryGetComponent<End>(out End end))
         {
             Debug.Log("END REACHED");
@@ -192,6 +204,8 @@ public class PlayerAgent : Agent
 
     public void OnTriggerEnter2D(Collider2D col)
     {
+        // same as in OnCollisionEnter
+
         if (col.gameObject.TryGetComponent<End>(out End end))
         {
             Debug.Log("END REACHED");
